@@ -24,8 +24,10 @@ So, what's the punchline? Pick your favorite font and unleash your creativity on
 - `Quotes_Output/` is where the generated images will be saved.
 
 ## 💖 Instagram Quote Image Generator (Output) 
-<img src="Quotes_Output/01.jpg" alt="Description of image" width="300"/>
-<img src="Quotes_Output/02.jpg" alt="Description of image" width="300"/>
+<div style="display: flex;">
+    <img src="Quotes_Output/01.jpg" alt="Description of image 1" style="width: 400px; margin-right: 20px;">
+    <img src="Quotes_Output/02.jpg" alt="Description of image 2" style="width: 400px;">
+</div>
 
 
 ## 😅 Usage 
