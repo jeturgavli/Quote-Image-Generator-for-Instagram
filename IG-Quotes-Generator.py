@@ -20,9 +20,25 @@ def save_image(image, filename):
         os.makedirs(output_dir)
     image.save(f'{output_dir}/{filename}.jpg')
 
+def choose_background():
+    valid_backgrounds = [f'{i:02d}.jpg' for i in range(1, 11)]
+    
+    while True:
+        template = input("Choose Background (01 to 10): ")
+        filename = f'{template}.jpg'
+        
+        if filename in valid_backgrounds:
+            try:
+                bg = Image.open(f'Backgrounds/{filename}')
+                return bg
+            except FileNotFoundError:
+                print("File not found. Please make sure the file exists in the Backgrounds folder.")
+        else:
+            print("Invalid choice. Please enter a number between 01 and 10.")
+
 def main():
-    template = input("Choose Background: ")
-    templateBg = Image.open(f'Backgrounds/{template}.jpg')
+
+    templateBg = choose_background()
 
     font_object = ImageFont.truetype('Fonts/arial.ttf', 40)
     drawing_object = ImageDraw.Draw(templateBg)
