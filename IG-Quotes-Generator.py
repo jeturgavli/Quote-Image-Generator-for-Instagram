@@ -2,6 +2,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 import colorama
 from colorama import Fore, Back, Style
+import random
 colorama.init(autoreset=True)
 
 def get_text_color():
@@ -24,18 +25,24 @@ def choose_background():
     valid_backgrounds = [f'{i:02d}.jpg' for i in range(1, 11)]
     
     while True:
-        template = input("Choose Background (01 to 10): ")
-        filename = f'{template}.jpg'
+        template = input("Choose Background (01 to 10 or random): ").strip().lower()
         
-        if filename in valid_backgrounds:
+        if template in [f'{i:02d}' for i in range(1, 11)]:
+            filename = f'{template}.jpg'
+            try:
+                bg = Image.open(f'Backgrounds/{filename}')
+                return bg
+            except FileNotFoundError:
+                print("File not found. Please make sure the file exists in the Backgrounds folder.")
+        elif template == "random":
+            filename = random.choice(valid_backgrounds)
             try:
                 bg = Image.open(f'Backgrounds/{filename}')
                 return bg
             except FileNotFoundError:
                 print("File not found. Please make sure the file exists in the Backgrounds folder.")
         else:
-            print("Invalid choice. Please enter a number between 01 and 10.")
-
+            print("Invalid choice. Please enter a number between 01 and 10 or type 'random'.")
 def main():
 
     templateBg = choose_background()
