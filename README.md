@@ -33,7 +33,7 @@ So, what's the punchline? Pick your favorite font and unleash your creativity on
 ## 😅 Usage 
 1. **Install Requirments**
     ```bash
-    pip install -r requirments.txt`
+    pip install -r requirements.txt`
     ```
 2. **Run the script:**
     ```bash
