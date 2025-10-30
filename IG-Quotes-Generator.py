@@ -4,14 +4,14 @@ from PIL import Image, ImageDraw, ImageFont
 import colorama
 from colorama import Fore
 import random
-import textwrap  # +++ ADDED: Import textwrap module
+import textwrap  # Feature from PR 2
 
 colorama.init(autoreset=True)
 
 # Configuration constants
 OUTPUT_DIR = Path('Quotes_Output')
 BACKGROUNDS_DIR = Path('Backgrounds')
-FONTS_DIR = Path('Fonts')
+FONTS_DIR = Path('Fonts')  # Feature from PR 1
 OVERLAY_PATH = Path('Program Stuff/Img-2.png')
 
 FONT_SIZE = 40
@@ -19,7 +19,7 @@ TEXT_POSITION = (120, 750)
 LINE_HEIGHT = 50
 MAX_LINES = 5
 BACKGROUND_RANGE = range(1, 11)
-TEXT_WRAP_WIDTH = 30  # +++ ADDED: Set a character width for wrapping
+TEXT_WRAP_WIDTH = 30  # Feature from PR 2
 
 COLOR_MAP = {
     'white': (255, 255, 255),
@@ -71,7 +71,7 @@ def choose_background():
         return choose_background()
 
 
-# --- NOTE: This function is from PR 1. We keep it. ---
+# This is the function from your conflicting PR 1
 def choose_font():
     """Scan Fonts directory and let user choose a font."""
     print(f"\n{Fore.CYAN}Available Fonts:")
@@ -107,7 +107,7 @@ def choose_font():
         return "default"
 
 
-# --- CHANGED: Replaced get_text_lines with get_quote_text ---
+# This is the function from your accepted PR 2
 def get_quote_text():
     """Get a single block of quote text from the user."""
     print(f"\n{Fore.CYAN}Enter your quote. The text will be wrapped automatically.")
@@ -123,10 +123,10 @@ def get_quote_text():
     return " ".join(lines)
 
 
-# --- CHANGED: Now accepts quote_text and font_path, and performs wrapping ---
+# This function combines both features
 def create_quote_image(background, quote_text, text_color, font_path):
     """Create the quote image by compositing background, overlay, and text."""
-    # Load font
+    # Load font (from PR 1)
     try:
         if font_path == "default":
              font = ImageFont.load_default()
@@ -139,21 +139,20 @@ def create_quote_image(background, quote_text, text_color, font_path):
     # Create drawing context
     draw = ImageDraw.Draw(background)
     
-    # Apply overlay if it exists
+    # Apply overlay
     try:
         overlay = Image.open(OVERLAY_PATH)
         background.paste(overlay, overlay)
     except FileNotFoundError:
         print(f"{Fore.YELLOW}Overlay image not found. Continuing without overlay.")
     
-    # --- ADDED: Text wrapping logic ---
-    # Wrap the text
+    # Text wrapping logic (from PR 2)
     wrapped_lines = textwrap.wrap(quote_text, width=TEXT_WRAP_WIDTH)
     
     # Add text lines
     x, y_start = TEXT_POSITION
     for i, line in enumerate(wrapped_lines):
-        if i >= MAX_LINES:  # Respect the maximum number of lines
+        if i >= MAX_LINES: 
             break
         y = y_start + LINE_HEIGHT * i
         draw.text((x, y), line, fill=text_color, font=font)
@@ -173,6 +172,7 @@ def save_image(image, filename):
         print(f"{Fore.RED}Error saving image: {e}")
 
 
+# This main function combines both features
 def main():
     """Main function to run the quote generator."""
     print(f"\n{Fore.CYAN}{'='*50}")
@@ -181,13 +181,11 @@ def main():
     
     # Get user inputs
     background = choose_background()
-    font_path = choose_font() 
-    # --- CHANGED: Call get_quote_text instead of get_text_lines ---
-    quote_text = get_quote_text()
+    font_path = choose_font() # From PR 1
+    quote_text = get_quote_text() # From PR 2
     text_color = get_text_color()
     
     # Create the image
-    # --- CHANGED: Pass quote_text ---
     final_image = create_quote_image(background, quote_text, text_color, font_path)
     
     # Preview
