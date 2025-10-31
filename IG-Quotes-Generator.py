@@ -5,6 +5,8 @@ import colorama
 from colorama import Fore
 import random
 import textwrap  # Feature from PR 2
+import argparse
+
 
 colorama.init(autoreset=True)
 
@@ -25,6 +27,17 @@ COLOR_MAP = {
     'white': (255, 255, 255),
     'black': (0, 0, 0)
 }
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Quote Image Generator CLI")
+
+    parser.add_argument("--quote", type=str, help="Quote text to render on the image")
+    parser.add_argument("--bg", type=str, help="Background number (01-10) or 'random'")
+    parser.add_argument("--color", type=str, choices=["white", "black", "random"], help="Text color")
+    parser.add_argument("--font", type=str, help="Font index (1, 2, 3...) or 'random'")
+    parser.add_argument("--output", type=str, help="Output filename (without extension)")
+
+    return parser.parse_args()
 
 
 def get_user_choice(prompt, valid_options, case_sensitive=False):
@@ -174,37 +187,59 @@ def save_image(image, filename):
 
 # This main function combines both features
 def main():
-    """Main function to run the quote generator."""
+    # Display program header
     print(f"\n{Fore.CYAN}{'='*50}")
     print(f"{Fore.CYAN}Quote Image Generator")
     print(f"{Fore.CYAN}{'='*50}\n")
-    
-    # Get user inputs
-    background = choose_background()
-    font_path = choose_font() # From PR 1
-    quote_text = get_quote_text() # From PR 2
-    text_color = get_text_color()
-    
-    # Create the image
+
+    # Parse command-line arguments
+    args = parse_args()
+
+    # Choose background
+    if args.bg:
+        if args.bg.lower() == "random":
+            bg_choice = random.choice([f'{i:02d}' for i in BACKGROUND_RANGE])
+        else:
+            bg_choice = args.bg
+        background = Image.open(BACKGROUNDS_DIR / f"{bg_choice}.jpg")
+    else:
+        background = choose_background()
+
+    # Choose font
+    if args.font:
+        font_files = list(FONTS_DIR.glob("*.ttf")) + list(FONTS_DIR.glob("*.otf"))
+        if args.font.lower() == "random":
+            font_path = str(random.choice(font_files))
+        else:
+            index = int(args.font) - 1
+            font_path = str(font_files[index])
+    else:
+        font_path = choose_font()
+
+    # Get quote text
+    if args.quote:
+        quote_text = args.quote
+    else:
+        quote_text = get_quote_text()
+
+    # Choose text color
+    if args.color:
+        if args.color == "random":
+            text_color = random.choice(list(COLOR_MAP.values()))
+        else:
+            text_color = COLOR_MAP[args.color]
+    else:
+        text_color = get_text_color()
+
+    # Create the final image
     final_image = create_quote_image(background, quote_text, text_color, font_path)
-    
-    # Preview
-    print(f"\n{Fore.CYAN}Opening preview...")
-    final_image.show()
-    
-    # Save
-    filename = input("\nEnter image name (without extension): ").strip()
+
+    # Save the image
+    filename = args.output or input("\nEnter image name (without extension): ").strip()
     if filename:
         save_image(final_image, filename)
     else:
         print(f"{Fore.YELLOW}No filename provided. Image not saved.")
-    
-    # Ask to repeat
-    if get_user_choice("\nCreate another image? (y/n): ", ['y', 'n']) == 'y':
-        print("\n")
-        main()
-    else:
-        print(f"\n{Fore.GREEN}Thank you for using Quote Image Generator!")
 
 
 if __name__ == '__main__':
